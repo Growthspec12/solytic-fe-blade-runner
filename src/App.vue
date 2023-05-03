@@ -1,17 +1,30 @@
 <template>
-  <the-header />
-  <router-view />
+  <div v-if="isUserLoaded">
+    <the-header />
+    <router-view />
+  </div>
+  <div
+    class="loader-container"
+    v-else
+  >
+    <app-loader />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
 import TheHeader from "./components/TheHeader.vue";
+import AppLoader from "./components/AppLoader.vue";
+import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
 
+const isUserLoaded = ref(true);
+
 async function initToken () {
+  isUserLoaded.value = false;
   await store.dispatch("checkToken");
+  isUserLoaded.value = true;
 }
 
 onMounted(() => {
@@ -21,44 +34,3 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 </style>
-
-<!-- import TheLoader from "@/components/TheLoader.vue";
-import { mapGetters } from "vuex";
-export default {
-  components: {
-    TheLoader,
-    TheHeader
-  },
-
-  data () {
-    return {
-      isUserLoaded: null
-    };
-  },
-
-  computed: {
-    ...mapGetters(["isDarkMode"])
-  },
-
-  watch: {
-    isDarkMode (isDarkMode) {
-      isDarkMode ? document.body.classList.add("dark-mode") : document.body.classList.remove("dark-mode");
-    }
-  },
-
-  mounted () {
-    this.initToken();
-  },
-  methods: {
-    async initToken () {
-      this.isUserLoaded = false;
-      await this.$store.dispatch("checkToken");
-      await this.$store.dispatch("updateMode");
-      if (this.isDarkMode) {
-        document.body.classList.add("dark-mode");
-      }
-      this.isUserLoaded = true;
-    }
-  }
-
-}; -->

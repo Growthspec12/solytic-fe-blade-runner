@@ -1,8 +1,7 @@
 import store from "../store/store";
 
-export const canUserAccess = async () => {
+export const canUserAccess = () => {
   try {
-    await store.dispatch("checkToken");
     return store.getters.isUserLoggedIn;
   } catch (error) {
     console.log(error.response.data.error);

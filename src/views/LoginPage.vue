@@ -67,6 +67,7 @@ function inputUserName (value: string) {
   isUserNameCorrect.value = regex.test(user.username);
   store.dispatch("resetError");
 }
+
 function inputPassword (value: string) {
   isPasswordCorrect.value = true;
   const regex = /^(?=.{8,}).+$/;
@@ -74,16 +75,24 @@ function inputPassword (value: string) {
   isPasswordCorrect.value = regex.test(user.password);
   store.dispatch("resetError");
 }
+
 async function loginUser () {
   if (!user.username.length) {
     isUserNameCorrect.value = false;
     return;
   }
+
   if (!user.password.length) {
     isPasswordCorrect.value = false;
     return;
   }
+
   await store.dispatch("login", user);
+
+  if (!loginError.value) {
+    user.username = "";
+    user.password = "";
+  }
 }
 </script>
 
@@ -92,7 +101,6 @@ async function loginUser () {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: $page-bg;
   height: 100%;
   min-height: 100vh;
   padding: 10px;
