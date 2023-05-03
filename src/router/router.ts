@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import UserPage from "../views/UserPage.vue";
 import LoginPage from "../views/LoginPage.vue";
+import { canUserAccess } from "../helpers/userAccess";
 
 const routes = [
   {
@@ -15,10 +16,10 @@ const routes = [
   {
     path: "/user",
     name: "user",
-    component: UserPage
-    // meta: {
-    //   needLogin: true
-    // }
+    component: UserPage,
+    meta: {
+      needLogin: true
+    }
   }
 ];
 
@@ -27,12 +28,13 @@ const router = createRouter({
   routes
 });
 
-// router.beforeEach(async (to, _, next) => {
-//   if (!to.meta.needAuth) {
-//     next();
-//     return;
-//   }
-//   getItem("token") ? next() : next("/login");
-// });
+router.beforeEach(async (to, _, next) => {
+  if (!to.meta.needLogin) {
+    next();
+    return;
+  }
+  // console.log(to, next);
+  await canUserAccess() ? next() : next("/login");
+});
 
 export default router;

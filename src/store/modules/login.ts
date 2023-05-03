@@ -55,7 +55,6 @@ export default {
         const { mutate } = useMutation(CHECK_TOKEN);
         const { data }: any = await mutate({ token });
         const user = data.checkToken;
-
         commit("loginSuccess", user);
       } catch {
         commit("toggleLoggedIn", false);
