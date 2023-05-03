@@ -2,19 +2,20 @@ import { ApolloServer, gql } from "apollo-server";
 import jwt from "jsonwebtoken";
 
 const typeDefs = gql`
-
-  type AuthPayload {
-    user: User
-    accessToken: AccessToken
+  type User {
+    id: ID
+    username: String
+    password: String
   }
 
   type AccessToken {
     token: String
+    tokenType: String
   }
-
-  type User {
-    id: ID
-    username: String
+ 
+  type AuthPayload {
+    user: User
+    accessToken: AccessToken
   }
 
   type Query {
@@ -22,7 +23,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login (username: String, password: String): AuthPayload
+    loginUser (username: String, password: String): AuthPayload
     checkToken(token: String): User
   }
 `;
@@ -45,12 +46,13 @@ const resolvers = {
     users: () => users.toJSON()
   },
   Mutation: {
-    login (_, { username, password }) {
+    loginUser (_, { username, password }) {
       const user = users.find(user => user.username === username);
-      const isPasswordValid = user.password === password;
       if (!user) {
         throw new Error("Invalid login or password");
       }
+
+      const isPasswordValid = user.password === password;
       if (!isPasswordValid) {
         throw new Error("Invalid login or password");
       }
@@ -59,10 +61,12 @@ const resolvers = {
 
       const returnValue = {
         accessToken: {
-          token
+          token,
+          tokenType: "Bearer"
         },
         user: {
-          id: user.id
+          id: user.id,
+          username: user.username
         }
       };
 

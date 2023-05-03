@@ -4,26 +4,33 @@
       class="form"
       @submit.prevent="loginUser"
     >
+      <p
+        class="form__text form__text_error"
+        v-if="loginError"
+      >
+        {{ loginError }}
+      </p>
       <AppInput
         input-type="text"
         img-link="user.png"
         placeholder="Username"
-        @input="inputLogin"
-        :value="userData.login"
-        :class="{'form__input-error': !isLoginCorrect}"
+        @input="inputUserName"
+        :value="user.username"
+        :class="{'form__input-error': !isUserNameCorrect}"
       />
       <AppInput
         input-type="password"
         img-link="lock.png"
         placeholder="Password"
         @input="inputPassword"
-        :value="userData.password"
+        :value="user.password"
         :class="{'form__input-error': !isPasswordCorrect}"
       />
+
       <AppButton
         text="Sign in"
         type="submit"
-        :disabled="!isLoginCorrect || !isPasswordCorrect "
+        :disabled="!isUserNameCorrect || !isPasswordCorrect "
       />
       <p class="form__text">
         Not a member? <a
@@ -36,26 +43,47 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, computed } from "vue";
 import AppButton from "../components/AppButton.vue";
 import AppInput from "../components/AppInput.vue";
-import type { User } from "../types/Login";
-import { computed } from "vue";
 import { useStore } from "vuex";
+
 const store = useStore();
 
-const isLoginCorrect = computed<boolean>(() => store.getters.isLoginCorrect);
-const isPasswordCorrect = computed<boolean>(() => store.getters.isPasswordCorrect);
-const userData = computed<User>(() => store.getters.userData);
+const loginError = computed(() => store.getters.loginError);
 
-function inputLogin (login: string) {
-  store.dispatch("updateLogin", login);
-}
-function inputPassword (password: string) {
-  store.dispatch("updatePassword", password);
-}
+const user = reactive({
+  username: "",
+  password: ""
+});
 
+const isUserNameCorrect = ref(true);
+const isPasswordCorrect = ref(true);
+
+function inputUserName (value: string) {
+  isUserNameCorrect.value = true;
+  const regex = /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/;
+  user.username = value;
+  isUserNameCorrect.value = regex.test(user.username);
+  store.dispatch("resetError");
+}
+function inputPassword (value: string) {
+  isPasswordCorrect.value = true;
+  const regex = /^(?=.{8,}).+$/;
+  user.password = value;
+  isPasswordCorrect.value = regex.test(user.password);
+  store.dispatch("resetError");
+}
 async function loginUser () {
-  await store.dispatch("login");
+  if (!user.username.length) {
+    isUserNameCorrect.value = false;
+    return;
+  }
+  if (!user.password.length) {
+    isPasswordCorrect.value = false;
+    return;
+  }
+  await store.dispatch("login", user);
 }
 </script>
 

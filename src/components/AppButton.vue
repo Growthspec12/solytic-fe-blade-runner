@@ -37,7 +37,6 @@ defineProps({
   border: none;
   border-radius: 5px;
   font-size: 1rem;
-  margin-bottom: 10px;
 
   &:disabled{
     background: $gray;

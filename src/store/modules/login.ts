@@ -1,66 +1,79 @@
 import type { LoginState, User } from "../../types/Login";
 import type { ActionContext } from "vuex";
+import { getItem, setItem, removeItem } from "../../helpers/storage";
 import { provideApolloClient } from "@vue/apollo-composable";
 import { apolloClient } from "../../apllo/apollo";
 import { useMutation } from "@vue/apollo-composable";
-import {LOGIN} from "../../apllo/mutations";
+import { CHECK_TOKEN, LOGIN } from "../../apllo/mutations";
 provideApolloClient(apolloClient)
 
 
 export default {
   state (): LoginState {
     return {
-      user: <User>{},
-      isLoginCorrect: true,
-      isPasswordCorrect: true,
+      userData: {} as User,
+      loginError: null,
+      isUserLoggedIn: false
     };
   },
   getters: {
-    isLoginCorrect (state: LoginState): boolean {
-      return state.isLoginCorrect;
+    userData (state: LoginState) {
+      return state.userData;
     },
-    isPasswordCorrect (state: LoginState): boolean {
-      return state.isPasswordCorrect;
+    loginError (state: LoginState) {
+      return state.loginError;
     },
-    userData (state: LoginState): User {
-      return state.user;
+    isUserLoggedIn (state: LoginState) {
+      return state.isUserLoggedIn;
     }
   },
 
   mutations: {
-    setLogin (state: LoginState, value: string){
-      state.user.login = value;
+    loginSuccess (state: LoginState, user: User) {
+      state.userData = user;
+      state.isUserLoggedIn = true;
     },
-    setPassword (state: LoginState, value: string){
-      state.user.password = value;
+    loginFailure (state: LoginState, errorMessage: string) {
+      state.loginError = errorMessage;
+      state.isUserLoggedIn = false;
     },
-    setIsLoginCorrect(state: LoginState, isCorrect: boolean){
-      state.isLoginCorrect = isCorrect;
+    resetError (state: LoginState) {
+      state.loginError = null;
     },
-    setIsPasswordCorrect(state: LoginState, isCorrect: boolean){
-      state.isPasswordCorrect = isCorrect;
+    toggleLoggedIn (state: LoginState, isLoggedIn: boolean) {
+      state.isUserLoggedIn = isLoggedIn;
     }
+
   },
 
   actions: {
-    updateLogin ({ commit }: ActionContext, login: string) {
-      commit("setIsLoginCorrect", true);
-      commit("setLogin", login);
-      const regex = /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/;
-      const isCorrect = regex.test(login);
-      commit("setIsLoginCorrect", isCorrect);
+    async checkToken ({ commit }: ActionContext) {
+      const token = getItem("token");
+      if (!token) return;
+
+      try {
+        const { mutate } = useMutation(CHECK_TOKEN);
+        const { data }: any = await mutate({ token });
+        const user = data.checkToken;
+
+        commit("loginSuccess", user);
+      } catch {
+        commit("toggleLoggedIn", false);
+        removeItem("token");
+      }
     },
-    updatePassword ({ commit }: ActionContext, password: string) {
-      commit("setIsPasswordCorrect", true)
-      commit("setPassword", password);
-      const regex = /^(?=.{8,}).+$/;
-      const isCorrect = regex.test(password);
-      commit("setIsPasswordCorrect", isCorrect);
+    async login ({ commit }: ActionContext, user: User) {
+      try {
+        const { mutate } = useMutation(LOGIN);
+        const { data }: any = await mutate(user);
+        setItem("token", data.loginUser.accessToken.token);
+        commit("loginSuccess", data.loginUser.user);
+      } catch (error: any) {
+        commit("loginFailure", error.message)
+      }
     },
-    async login ({getters}) {
-      const {mutate} = useMutation(LOGIN)
-      const res = await mutate({username: getters.userData.login, password: getters.userData.password})
-      console.log(res)
+    resetError({ commit }) {
+      commit("resetError")
     }
 
   }
