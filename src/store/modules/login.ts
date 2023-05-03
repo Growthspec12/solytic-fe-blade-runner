@@ -1,12 +1,18 @@
 import type { LoginState, User } from "../../types/Login";
 import type { ActionContext } from "vuex";
+import { provideApolloClient } from "@vue/apollo-composable";
+import { apolloClient } from "../../apllo/apollo";
+import { useMutation } from "@vue/apollo-composable";
+import {LOGIN} from "../../apllo/mutations";
+provideApolloClient(apolloClient)
+
 
 export default {
   state (): LoginState {
     return {
       user: <User>{},
       isLoginCorrect: true,
-      isPasswordCorrect: true
+      isPasswordCorrect: true,
     };
   },
   getters: {
@@ -50,6 +56,11 @@ export default {
       const regex = /^(?=.{8,}).+$/;
       const isCorrect = regex.test(password);
       commit("setIsPasswordCorrect", isCorrect);
+    },
+    async login ({getters}) {
+      const {mutate} = useMutation(LOGIN)
+      const res = await mutate({username: getters.userData.login, password: getters.userData.password})
+      console.log(res)
     }
 
   }

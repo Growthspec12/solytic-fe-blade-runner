@@ -10,8 +10,12 @@
     "host": "vite --host"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.13",
+    "@vue/apollo-composable": "^4.0.0-beta.4",
     "apollo-server": "^3.12.0",
     "graphql": "^16.6.0",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.0",
     "sass": "^1.62.1",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",

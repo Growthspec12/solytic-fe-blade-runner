@@ -1,6 +1,9 @@
 <template>
   <div class="page">
-    <form class="form">
+    <form
+      class="form"
+      @submit.prevent="loginUser"
+    >
       <AppInput
         input-type="text"
         img-link="user.png"
@@ -33,12 +36,11 @@
 </template>
 
 <script setup lang="ts">
+import AppButton from "../components/AppButton.vue";
+import AppInput from "../components/AppInput.vue";
 import type { User } from "../types/Login";
 import { computed } from "vue";
 import { useStore } from "vuex";
-import AppButton from "../components/AppButton.vue";
-import AppInput from "../components/AppInput.vue";
-
 const store = useStore();
 
 const isLoginCorrect = computed<boolean>(() => store.getters.isLoginCorrect);
@@ -50,6 +52,10 @@ function inputLogin (login: string) {
 }
 function inputPassword (password: string) {
   store.dispatch("updatePassword", password);
+}
+
+async function loginUser () {
+  await store.dispatch("login");
 }
 </script>
 
