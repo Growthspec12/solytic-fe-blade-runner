@@ -1,0 +1,30 @@
+@import "./normalize";
+@import "./variables";
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body{
+  font-family: sans-serif;
+}
+.form{
+  width: 100%;
+  max-width: 500px;
+
+  &__text{
+    text-align: center;
+    font-size: 1.1rem;
+    color: $gray;
+  }
+
+  &__link{
+    color: $white;
+    text-decoration: none;
+  }
+
+  &__input-error{
+    border: 1px solid red;
+  }
+}
