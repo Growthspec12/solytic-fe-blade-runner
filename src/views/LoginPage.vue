@@ -5,22 +5,22 @@
         input-type="text"
         img-link="user.png"
         placeholder="Username"
-        @input="inputUserName"
-        :value="userName"
-        :class="{'form__input-error': !isUserNameCorrect}"
+        @input="inputLogin"
+        :value="userData.login"
+        :class="{'form__input-error': !isLoginCorrect}"
       />
       <AppInput
         input-type="password"
         img-link="lock.png"
         placeholder="Password"
         @input="inputPassword"
-        :value="password"
+        :value="userData.password"
         :class="{'form__input-error': !isPasswordCorrect}"
       />
       <AppButton
         text="Sign in"
         type="submit"
-        :disabled="!isUserNameCorrect || !isPasswordCorrect "
+        :disabled="!isLoginCorrect || !isPasswordCorrect "
       />
       <p class="form__text">
         Not a member? <a
@@ -33,26 +33,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import type { User } from "../types/Login";
+import { computed } from "vue";
+import { useStore } from "vuex";
 import AppButton from "../components/AppButton.vue";
 import AppInput from "../components/AppInput.vue";
 
-const userName = ref("");
-const password = ref("");
-const isUserNameCorrect = ref(true);
-const isPasswordCorrect = ref(true);
+const store = useStore();
 
-function inputUserName (value: string) {
-  isUserNameCorrect.value = true;
-  const regex = /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/;
-  userName.value = value;
-  isUserNameCorrect.value = regex.test(userName.value);
+const isLoginCorrect = computed<boolean>(() => store.getters.isLoginCorrect);
+const isPasswordCorrect = computed<boolean>(() => store.getters.isPasswordCorrect);
+const userData = computed<User>(() => store.getters.userData);
+
+function inputLogin (login: string) {
+  store.dispatch("updateLogin", login);
 }
-function inputPassword (value: string) {
-  isPasswordCorrect.value = true;
-  const regex = /^(?=.{8,}).+$/;
-  password.value = value;
-  isPasswordCorrect.value = regex.test(password.value);
+function inputPassword (password: string) {
+  store.dispatch("updatePassword", password);
 }
 </script>
 
