@@ -28,3 +28,6 @@ body{
     border: 1px solid red;
   }
 }
+.router-link-active{
+  border-bottom: 1px solid $white;
+}
