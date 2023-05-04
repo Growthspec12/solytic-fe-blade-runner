@@ -30,12 +30,12 @@ const typeDefs = gql`
 
 const users = [
   {
-    id: 1,
+    id: 123,
     username: "test@test.com",
     password: "12345678"
   },
   {
-    id: 2,
+    id: 251,
     username: "test2@test.com",
     password: "12345678"
   }

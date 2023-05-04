@@ -3,12 +3,17 @@
     :type="type"
     class="button"
     :disabled="disabled"
+    @click="$emit('click')"
+    ref="button"
   >
     {{ text }}
   </button>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, nextTick } from "vue";
+
+defineEmits(["click"]);
 defineProps({
   text: {
     type: String,
@@ -23,6 +28,15 @@ defineProps({
     required: true,
     default: false
   }
+});
+
+const button = ref<HTMLElement | null>(null);
+onMounted(() => {
+  nextTick(() => {
+    if (button.value) {
+      button.value.focus();
+    }
+  });
 });
 </script>
 

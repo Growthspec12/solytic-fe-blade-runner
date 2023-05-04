@@ -10,7 +10,7 @@
       >
         {{ loginError }}
       </p>
-      <AppInput
+      <app-input
         input-type="text"
         img-link="user.png"
         placeholder="Username"
@@ -18,7 +18,7 @@
         :value="user.username"
         :class="{'form__input-error': !isUserNameCorrect}"
       />
-      <AppInput
+      <app-input
         input-type="password"
         img-link="lock.png"
         placeholder="Password"
@@ -27,7 +27,7 @@
         :class="{'form__input-error': !isPasswordCorrect}"
       />
 
-      <AppButton
+      <app-button
         text="Sign in"
         type="submit"
         :disabled="!isUserNameCorrect || !isPasswordCorrect "
@@ -35,10 +35,19 @@
       <p class="form__text">
         Not a member? <a
           class="form__link"
-          href="/signup"
+          href="/"
         >Sign up</a>
       </p>
     </form>
+
+    <app-popup
+      :close-popup="closePopup"
+      v-if="isPopupVisible"
+    >
+      <h2 class="heading">
+        User ID: {{ userData.id }}
+      </h2>
+    </app-popup>
   </div>
 </template>
 
@@ -46,11 +55,15 @@
 import { ref, reactive, computed } from "vue";
 import AppButton from "../components/AppButton.vue";
 import AppInput from "../components/AppInput.vue";
+import AppPopup from "../components/AppPopup.vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const store = useStore();
+const router = useRouter();
 
 const loginError = computed(() => store.getters.loginError);
+const userData = computed(() => store.getters.userData);
 
 const user = reactive({
   username: "",
@@ -76,6 +89,15 @@ function inputPassword (value: string) {
   store.dispatch("resetError");
 }
 
+const isPopupVisible = ref(false);
+function showPopup () {
+  isPopupVisible.value = true;
+}
+function closePopup () {
+  isPopupVisible.value = false;
+  router.push({ name: "user" });
+}
+
 async function loginUser () {
   if (!user.username.length) {
     isUserNameCorrect.value = false;
@@ -92,6 +114,7 @@ async function loginUser () {
   if (!loginError.value) {
     user.username = "";
     user.password = "";
+    showPopup();
   }
 }
 </script>
@@ -101,8 +124,6 @@ async function loginUser () {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  min-height: 100vh;
   padding: 10px;
 }
 </style>
