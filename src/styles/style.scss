@@ -40,6 +40,8 @@ body{
 
 .page{
   background-color: $page-bg;
+  width: 100%;
+  min-height: calc(100vh - 70px);
 }
 
 .loader-container{
@@ -50,4 +52,11 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.heading{
+  font-size: 1.3rem;
+  color: $gray-light;
+  font-family: serif;
+  margin: 20px;
 }

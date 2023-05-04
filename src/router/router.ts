@@ -28,12 +28,12 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, _, next) => {
+router.beforeEach(async (to, _, next) => {
   if (!to.meta.needLogin) {
     next();
     return;
   }
-  canUserAccess() ? next() : next("/login");
+  await canUserAccess() ? next() : next("/login");
 });
 
 export default router;
