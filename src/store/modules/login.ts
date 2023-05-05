@@ -1,12 +1,12 @@
-import type { LoginState, User } from "../../types/Login";
+import type { LoginState, User } from "@/types/Login";
 import type { ActionContext } from "vuex";
-import { getItem, setItem, removeItem } from "../../helpers/storage";
+import { getItem, setItem, removeItem } from "@/helpers/storage";
 import { provideApolloClient } from "@vue/apollo-composable";
-import { apolloClient } from "../../apllo/apollo";
+import { apolloClient } from "@/apllo/apollo";
 import { useMutation } from "@vue/apollo-composable";
-import { CHECK_TOKEN, LOGIN } from "../../apllo/mutations";
-provideApolloClient(apolloClient)
-
+import { CHECK_TOKEN, LOGIN } from "@/apllo/mutations";
+import type { RootState } from "@/types/RootState";
+provideApolloClient(apolloClient);
 
 export default {
   state (): LoginState {
@@ -47,7 +47,7 @@ export default {
   },
 
   actions: {
-    async checkToken ({ commit }: ActionContext) {
+    async checkToken ({ commit }: ActionContext<RootState, LoginState>) {
       const token = getItem("token");
       if (!token) return;
 
@@ -61,18 +61,18 @@ export default {
         removeItem("token");
       }
     },
-    async login ({ commit }: ActionContext, user: User) {
+    async login ({ commit }: ActionContext<RootState, LoginState>, user: User) {
       try {
         const { mutate } = useMutation(LOGIN);
         const { data }: any = await mutate(user);
         setItem("token", data.loginUser.accessToken.token);
         commit("loginSuccess", data.loginUser.user);
       } catch (error: any) {
-        commit("loginFailure", error.message)
+        commit("loginFailure", error.message);
       }
     },
-    resetError({ commit }) {
-      commit("resetError")
+    resetError({ commit }: ActionContext<RootState, LoginState>) {
+      commit("resetError");
     }
 
   }

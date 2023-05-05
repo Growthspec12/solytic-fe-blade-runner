@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
-import { getItem } from "../helpers/storage";
+import { getItem } from "@/helpers/storage";
 
 const store = useStore();
 

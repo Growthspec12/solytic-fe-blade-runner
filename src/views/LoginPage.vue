@@ -12,7 +12,7 @@
       </p>
       <app-input
         input-type="text"
-        img-link="user.png"
+        :img-link="profileImg"
         placeholder="Username"
         @input="inputUserName"
         :value="user.username"
@@ -20,7 +20,7 @@
       />
       <app-input
         input-type="password"
-        img-link="lock.png"
+        :img-link="lockImg"
         placeholder="Password"
         @input="inputPassword"
         :value="user.password"
@@ -52,10 +52,10 @@
 </template>
 
 <script setup lang="ts">
+import AppButton from "@/components/AppButton.vue";
+import AppInput from "@/components/AppInput.vue";
+import AppPopup from "@/components/AppPopup.vue";
 import { ref, reactive, computed } from "vue";
-import AppButton from "../components/AppButton.vue";
-import AppInput from "../components/AppInput.vue";
-import AppPopup from "../components/AppPopup.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -64,6 +64,10 @@ const router = useRouter();
 
 const loginError = computed(() => store.getters.loginError);
 const userData = computed(() => store.getters.userData);
+const resetError = () => store.dispatch("resetError");
+const login = async (user) => await store.dispatch("login", user);
+const profileImg = computed(() => "https://cdn-icons-png.flaticon.com/512/1250/1250689.png");
+const lockImg = computed(() => "https://cdn-icons-png.flaticon.com/512/2889/2889676.png");
 
 const user = reactive({
   username: "",
@@ -78,7 +82,7 @@ function inputUserName (value: string) {
   const regex = /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/;
   user.username = value;
   isUserNameCorrect.value = regex.test(user.username);
-  store.dispatch("resetError");
+  resetError();
 }
 
 function inputPassword (value: string) {
@@ -86,7 +90,7 @@ function inputPassword (value: string) {
   const regex = /^(?=.{8,}).+$/;
   user.password = value;
   isPasswordCorrect.value = regex.test(user.password);
-  store.dispatch("resetError");
+  resetError();
 }
 
 const isPopupVisible = ref(false);
@@ -109,7 +113,7 @@ async function loginUser () {
     return;
   }
 
-  await store.dispatch("login", user);
+  await login(user);
 
   if (!loginError.value) {
     user.username = "";

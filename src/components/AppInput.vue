@@ -3,7 +3,7 @@
     <div class="label__img-container">
       <img
         class="label__img"
-        :src="link"
+        :src="imgLink"
         alt=""
       >
     </div>
@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+
 const emit = defineEmits(["input"]);
-const props = defineProps({
+defineProps({
   inputType: {
     type: String,
     required: true
@@ -39,8 +39,7 @@ const props = defineProps({
     default: ""
   }
 });
-
-const link = computed<string>(() => new URL(`../assets/${props.imgLink}`, import.meta.url).href);
+// const imagePath = ref(`/assets/${props.imgLink}`);
 
 function emitInput (event: Event) {
   if (event.target) {

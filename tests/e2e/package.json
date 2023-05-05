@@ -1,0 +1,11 @@
+{
+  "name": "solytic-fe-e2e-tests",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "test": "cypress open"
+  },
+  "devDependencies": {
+    "cypress": "^12.11.0"
+  }
+}

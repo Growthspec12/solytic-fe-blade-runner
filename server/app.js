@@ -1,7 +1,8 @@
-import { ApolloServer, gql } from "apollo-server";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
 import jwt from "jsonwebtoken";
 
-const typeDefs = gql`
+const typeDefs = `
   type User {
     id: ID
     username: String
@@ -82,6 +83,8 @@ const resolvers = {
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
+const { url } = await startStandaloneServer(server, {
+  listen: { port: 4000 }
 });
+
+console.log(`🚀  Server ready at: ${url}`);

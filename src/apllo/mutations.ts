@@ -7,7 +7,7 @@ export const CHECK_TOKEN = gql`
       username
     }
   }
-`
+`;
 
 export const LOGIN = gql`
   mutation Mutation($username: String, $password: String) {
@@ -22,4 +22,4 @@ export const LOGIN = gql`
       }
     }
   }
-`
+`;

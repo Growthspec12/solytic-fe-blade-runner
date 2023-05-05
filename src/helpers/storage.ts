@@ -1,8 +1,8 @@
-export const getItem = (key) => {
+export const getItem = (key: string): string => {
   return JSON.parse(localStorage.getItem(key));
 };
 
-export const setItem = (key, value) => {
+export const setItem = (key: string, value: any) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (err) {
@@ -10,6 +10,6 @@ export const setItem = (key, value) => {
   }
 };
 
-export const removeItem = (key) => {
+export const removeItem = (key: string) => {
   localStorage.removeItem(key);
 };
